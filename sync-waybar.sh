@@ -76,8 +76,8 @@ def guard(fg_, bg_, why):
     print(f"contrast guard [{why}]: {fg_} on {bg_} ({contrast(fg_, bg_):.2f}) -> {cand} on {bg_} ({contrast(cand, bg_):.2f})")
     return cand, bg_
 
-# 整体缩放：默认 1.2（2026-10-01 用户要求再放大），可用 FCITX_SCALE 环境变量覆盖（改这里或环境变量均可）
-S = float(os.environ.get("FCITX_SCALE", "1.2"))
+# 整体缩放：默认 1.0（2026-10-01 1.2 试后回退），可用 FCITX_SCALE 环境变量覆盖（改这里或环境变量均可）
+S = float(os.environ.get("FCITX_SCALE", "1.0"))
 def px(v):
     return max(1, round(v * S))
 
