@@ -86,8 +86,9 @@ PR = px(18)            # 面板圆角半径：14
 HR = px(14)            # 选中块圆角半径：11
 PINSET, PSIZE = px(3), VB - px(3) * 2    # 面板外框：2,44
 HINSET, HSIZE = px(4), VB - px(4) * 2    # 选中块外框：3,42
-PM = PINSET + PR       # 面板九宫格边距 = 外框偏移 + 圆角半径，让整段圆弧落在不拉伸区（2026-10-01）
-HM = HINSET + HR       # 选中块九宫格边距，四边统一
+PM = PR                # 面板九宫格边距 = 圆角半径
+HM = HR                # 选中块九宫格边距 = 圆角半径
+HM_TB = px(10)         # 纵向保护区，历史值
 # 内容边距：隔离缝 = 内容边距 + 文字边距 − 选中块胀出，四边都按 2px 配平
 # 横向：7 + 6 − 11 = 2；纵向：8 + 2 − 8 = 2
 # 另需候选间距 (左6+右6=12) > 高亮横向胀出 (11)，否则高亮盖住下一个序号
@@ -96,11 +97,13 @@ CM_TB = px(10)
 SW = round(1.5 * S, 1) # 描边宽度：1.2
 
 def rr(x, y, w, h, r):
+    # 真圆弧 arc：Q 二次贝塞尔只是近似圆，45° 处比真圆内收约 6% 半径，
+    # 大圆角下肉眼可见不够圆顺；mellow 用真圆弧所以没这个问题 (2026-10-01)
     x1, y1 = x + w, y + h
-    return (f"M {x+r},{y} H {x1-r} Q {x1},{y} {x1},{y+r} "
-            f"V {y1-r} Q {x1},{y1} {x1-r},{y1} "
-            f"H {x+r} Q {x},{y1} {x},{y1-r} "
-            f"V {y+r} Q {x},{y} {x+r},{y} Z")
+    return (f"M {x+r},{y} H {x1-r} A {r},{r} 0 0 1 {x1},{y+r} "
+            f"V {y1-r} A {r},{r} 0 0 1 {x1-r},{y1} "
+            f"H {x+r} A {r},{r} 0 0 1 {x},{y1-r} "
+            f"V {y+r} A {r},{r} 0 0 1 {x+r},{y} Z")
 
 def panel_svg(panel, stroke):
     # 只用 <path>（fcitx5 对 <rect>/滤镜支持有 bug）；扁平无阴影。
@@ -125,6 +128,7 @@ def theme_conf(name, desc, panel, text, hl_text, hl_bg):
     # 高亮块模仿 waybar #clock 反色：hl_bg + hl_text
     tl, tr, tt, tb = px(8), px(8), px(3), px(3)
     ml, mr, mt, mb = px(6), px(6), px(5), px(5)
+    mhm = px(8)
     cx, cy = px(5), px(4)
     return f'''[Metadata]
 Name={name}
@@ -164,8 +168,8 @@ BorderWidth=0
 [InputPanel/Highlight/Margin]
 Left={HM}
 Right={HM}
-Top={HM}
-Bottom={HM}
+Top={HM_TB}
+Bottom={HM_TB}
 
 [InputPanel/ContentMargin]
 Left={CM_LR}
@@ -233,10 +237,10 @@ BorderColor={hl_bg}00
 BorderWidth=0
 
 [Menu/Highlight/Margin]
-Left={HM}
-Right={HM}
-Top={HM}
-Bottom={HM}
+Left={mhm}
+Right={mhm}
+Top={mhm}
+Bottom={mhm}
 
 [Menu/Separator]
 Color={hl_bg}
