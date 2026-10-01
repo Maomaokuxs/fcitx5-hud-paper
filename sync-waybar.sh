@@ -250,16 +250,18 @@ Image=
 Image=
 '''
 
-# 浅色：面板=waybar bg，文字=waybar fg，高亮=壁纸 accent 块 + 对比字
+# 候选框背景固定：白昼 #ffffff / 黑夜 #000000，不再跟壁纸取色（2026-10-01 用户要求）
+# 文字色仍走 guard 对比度兜底，保证在纯白/纯黑底上可读；高亮块仍取壁纸 accent
 # guard 返回 (字, 底) 顺序
-_ltext, _lpanel = guard(fg, bg, "light")
+FIXED_LIGHT_PANEL = "#ffffff"
+FIXED_DARK_PANEL = "#000000"
+_ltext, _lpanel = guard(fg, FIXED_LIGHT_PANEL, "light")
 _lhl, _ = guard(hltext, accent, "light-hl")
-light = ("hud-paper", "Hud Paper light — paper bg, accent selection",
+light = ("hud-paper", "Hud Paper light — fixed white panel, accent selection",
          _lpanel, _ltext, _lhl, accent)
-# 深色：底=黑（或更暗色），文字=更亮色，高亮=壁纸 accent 块 + 对比字
-_dtext, _dpanel = guard(lightcolor, darkbg, "dark")
+_dtext, _dpanel = guard(lightcolor, FIXED_DARK_PANEL, "dark")
 _dhl, _ = guard(hltext, accent, "dark-hl")
-dark = ("hud-paper-dark", "Hud Paper dark — black panel, accent selection",
+dark = ("hud-paper-dark", "Hud Paper dark — fixed black panel, accent selection",
         _dpanel, _dtext, _dhl, accent)
 
 for dirname, desc, panel, text, hl_text, hl_bg in (light, dark):
