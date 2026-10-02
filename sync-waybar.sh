@@ -84,6 +84,7 @@ def px(v):
 VB = px(60)            # SVG 内禀尺寸：60*0.8=48
 PR = px(6)             # 面板圆角：视觉上与高亮 r=3 一致（面板更大，需更大绝对半径）(2026-10-02)
 HR = px(4)             # 高亮圆角：用户目测确定，独立可调 (2026-10-02)
+HL_SHADOW = True       # 高亮阴影开关：多层半透明模拟柔边（fcitx5 不支持 SVG 滤镜）(2026-10-02)
 PINSET, PSIZE = px(3), VB - px(3) * 2    # 面板外框：2,44
 HINSET, HSIZE = px(4), VB - px(4) * 2    # 选中块外框：3,42
 PM = PR                # 面板九宫格边距 = 圆角半径
@@ -116,9 +117,18 @@ def panel_svg(panel, stroke):
 '''
 
 def highlight_svg(fill):
+    # 阴影层画在 pill 之下：每层向外扩张1px，圆角同步+1（同心），透明度由外向内递增
+    shadow = ""
+    if HL_SHADOW:
+        _layers = []
+        for _ex, _op in ((3, 0.05), (2, 0.09), (1, 0.14)):
+            _i, _sz, _r = HINSET - _ex, HSIZE + _ex * 2, HR + _ex
+            _d = rr(_i, _i, _sz, _sz, _r)
+            _layers.append("  <path d=\"" + _d + "\" fill=\"#000000\" fill-opacity=\"" + str(_op) + "\"/>")
+        shadow = "\n".join(_layers) + "\n"
     return f'''<?xml version="1.0" encoding="UTF-8"?>
 <svg width="{VB}" height="{VB}" version="1.1" viewBox="0 0 {VB} {VB}" xmlns="http://www.w3.org/2000/svg">
-  <path d="{rr(HINSET, HINSET, HSIZE, HSIZE, HR)}"
+{shadow}  <path d="{rr(HINSET, HINSET, HSIZE, HSIZE, HR)}"
         fill="{fill}" fill-opacity="1"/>
 </svg>
 '''
