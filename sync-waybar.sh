@@ -82,8 +82,8 @@ def px(v):
     return max(1, round(v * S))
 
 VB = px(60)            # SVG 内禀尺寸：60*0.8=48
-PR = px(18)            # 面板圆角半径：14
-HR = px(14)            # 选中块圆角半径：11
+PR = px(18)            # 面板圆角半径
+HR = max(1, PR // 2)   # 选中块圆角 = 面板圆角的一半：与外框圆角同语言、等比缩小 (2026-10-01)
 PINSET, PSIZE = px(3), VB - px(3) * 2    # 面板外框：2,44
 HINSET, HSIZE = px(4), VB - px(4) * 2    # 选中块外框：3,42
 PM = PR                # 面板九宫格边距 = 圆角半径
