@@ -126,7 +126,7 @@ def highlight_svg(fill):
 def theme_conf(name, desc, panel, text, hl_text, hl_bg):
     # 横排候选：FullWidthHighlight=False 让高亮只包住当前候选（HUD 色块感）
     # 高亮块模仿 waybar #clock 反色：hl_bg + hl_text
-    tl, tr, tt, tb = px(8), px(8), px(3), px(3)
+    tl, tr, tt, tb = px(3), px(3), px(3), px(3)  # 文字边距四边一致：高亮块内文字居中 (2026-10-02)
     ml, mr, mt, mb = px(6), px(6), px(5), px(5)
     mhm = px(8)
     cx, cy = px(5), px(4)
